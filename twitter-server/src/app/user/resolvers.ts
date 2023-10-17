@@ -1,6 +1,18 @@
+import axios from "axios";
+
 const queries = {
     verifyGoogleToken: async(parent:any,{token}:{token: string})=>{
-        return token;
+        const googleToken = token;
+        const googleOauthUrl = new URL('https://oauth2.googleapis.com/tokeninfo')
+        googleOauthUrl.searchParams.set('id_token',googleToken)
+
+        const {data} = await axios.get(googleOauthUrl.toString(),{
+            responseType : 'json'
+        })
+
+        console.log(data);
+        return 'ok'
+        
     }
 }
 export const resolvers ={ queries}
