@@ -3,8 +3,11 @@ import { BsBell, BsBookmark, BsEnvelope, BsOption, BsTwitter } from 'react-icons
 import React, { useCallback } from 'react';
 import { BiHash, BiHomeCircle, BiMoney, BiUser } from 'react-icons/bi'
 import FeedCard from '@/components/FeedCard';
-import {SlOptions} from 'react-icons/sl'
+import { SlOptions } from 'react-icons/sl'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import toast from 'react-hot-toast';
+import { graphqlClient } from '@/clients/api';
+import { VerifyUserGoogleTokenQuery } from '@/graphql/queries/user';
 
 
 interface TwitterSidebarButton {
@@ -49,9 +52,16 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 ]
 
 export default function Home() {
-  const HandleLoginWithGgl = useCallback((cred:CredentialResponse)=>{
+  const HandleLoginWithGgl = useCallback(async (cred: CredentialResponse) => {
+    const googleToken = cred.credential
+    if (!googleToken) return toast.error('google token not found')
+    const { verifyGoogleToken } = await graphqlClient.request(VerifyUserGoogleTokenQuery, { token: googleToken })
+    toast.success("Verified Success")
+    console.log(verifyGoogleToken)
+    if (verifyGoogleToken) window.localStorage.setItem('__twitter_token',verifyGoogleToken)
 
-  },[])
+
+  }, [])
   return (
     <div>
       <div className='grid grid-cols-12 h-screen w-screen lg:px-56  px-0 '>
@@ -80,7 +90,7 @@ export default function Home() {
         <div className='col-span-3 p-5'>
           <div className='p-5 bg-slate-600  w-fit rounded-lg'>
             <h1 className='my-2 text-xl'>New to Twitter?</h1>
-          <GoogleLogin onSuccess={cred=>console.log(cred)}/>
+            <GoogleLogin onSuccess={HandleLoginWithGgl} />
           </div>
         </div>
       </div>
