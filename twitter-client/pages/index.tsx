@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { BsBell, BsBookmark, BsEnvelope, BsOption, BsTwitter } from 'react-icons/bs'
 import React, { useCallback } from 'react';
-import { BiHash, BiHomeCircle, BiMoney, BiUser } from 'react-icons/bi'
+import { BiHash, BiHomeCircle, BiImageAlt, BiMoney, BiUser } from 'react-icons/bi'
 import FeedCard from '@/components/FeedCard';
 import { SlOptions } from 'react-icons/sl'
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
@@ -56,6 +56,14 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 
 export default function Home() {
   const { user } = useCurrentUser()
+  console.log(user);
+  const handleSelectImage=useCallback(()=>{
+    const input = document.createElement("input");
+    input.setAttribute("type","file");
+    input.setAttribute("accept","image/*")
+    input.click();
+  },[])
+  
   const queryClient = useQueryClient()
 
   const HandleLoginWithGgl = useCallback(async (cred: CredentialResponse) => {
@@ -89,8 +97,8 @@ export default function Home() {
             w-full px-4 py-2 font-semibold' >Post</button>
             </div>
 
-           {user && <div className='absolute  bottom-6 bg-slate-800 gap-2 p-3  rounded-full items-center flex flex-wrap'>
-              {user?.profileImageUrl ? <Image className="rounded-full width={50} height={50} src={user.profileImageUrl}" /> :
+            {user && <div className='absolute  bottom-6 bg-slate-800 gap-2 p-3  rounded-full items-center flex flex-wrap'>
+              {user?.profileImageUrl ? <Image className="rounded-full width={50} height={50}" src={user.profileImageUrl} /> :
                 <div className='bg-slate-600 rounded-full p-3 w-12 h-12 text-center '>
                   <h1>{user?.firstName[0]}</h1>
                 </div>}
@@ -99,10 +107,29 @@ export default function Home() {
                 <h1>{user && user.firstName}-{user && user.lastName}</h1>
               </div>
             </div>
-}
+            }
           </div>
         </div>
         <div className='col-span-6 border-x-[1px] h-screen overflow-scroll scrollbar-hide border-b-0 border-gray-600  '>
+          <div>
+            <div className='border border-t-0 border-x-0  border-gray-600 hover:bg-slate-900 transition-all cursor-pointer '>
+              <div className='grid grid-cols-12 p-2 gap-3 mt-4'>
+                <div className='col-span-2'>
+                  {user?.profileImageUrl ? <Image className="rounded-full width={50} height={50}" src={user.profileImageUrl} /> :
+                    <div className='bg-slate-600 rounded-full p-3 w-12 h-12 text-center '>
+                      <h1>{user?.firstName[0]}</h1>
+                    </div>}
+                </div>
+                <div className="col-span-10">
+                  <textarea className="w-full border-b pt-3 text-xl border-slate-700 bg-transparent" placeholder="What's happening?" rows={2}></textarea>
+                  <div className="my-2 flex justify-between items-center">
+                  <BiImageAlt onClick={handleSelectImage} className="text-xl my-2" />
+                  <button className='bg-[#1d9bf0] rounded-full text-sm px-4 py-2 font-semibold' >Post</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <FeedCard />  <FeedCard /> <FeedCard /> <FeedCard /> <FeedCard /> <FeedCard /> <FeedCard /> <FeedCard /> <FeedCard />
         </div>
         {!user && <div className='col-span-3 p-5'>
